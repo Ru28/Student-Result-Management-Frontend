@@ -156,6 +156,7 @@ const StudentList = () => {
       setSortBy(field);
       setSortOrder('DESC');
     }
+    setCurrentPage(1); // Reset to first page when changing sort
   };
 
   const clearFilters = () => {
@@ -329,6 +330,7 @@ const StudentList = () => {
         <>
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
+              {/* In the table header */}
               <thead className="bg-gray-50">
                 <tr>
                   <th 
@@ -349,6 +351,19 @@ const StudentList = () => {
                   </th>
                   <th 
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('resultMark')}
+                  >
+                    <div className="flex items-center">
+                      Result Mark
+                      {sortBy === 'resultMark' && (
+                        <span className="ml-1">
+                          {sortOrder === 'ASC' ? '↑' : '↓'}
+                        </span>
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort('createdAt')}
                   >
                     <div className="flex items-center">
@@ -365,6 +380,8 @@ const StudentList = () => {
                   </th>
                 </tr>
               </thead>
+
+              {/* In the table body, update the result mark cell with proper formatting */}
               <tbody className="bg-white divide-y divide-gray-200">
                 {students.map((student) => (
                   <React.Fragment key={student.id}>
@@ -400,6 +417,23 @@ const StudentList = () => {
                         <div className="text-sm text-gray-500">{student.phone}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center h-full">
+                          <div className={`text-sm font-medium ${
+                            student.resultMark >= 80 ? 'text-green-600' :
+                            student.resultMark >= 60 ? 'text-yellow-600' :
+                            student.resultMark >= 40 ? 'text-orange-600' :
+                            'text-red-600'
+                          }`}>
+                            {typeof student.resultMark === 'number' ? 
+                              student.resultMark.toFixed(2) : 
+                              parseFloat(student.resultMark || 0).toFixed(2)}
+                          </div>
+                          {student.resultMark !== undefined && student.resultMark !== null && (
+                            <span className="ml-1 text-xs text-gray-500">/100</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">
                           {new Date(student.createdAt).toLocaleDateString()}
                         </div>
@@ -416,7 +450,7 @@ const StudentList = () => {
                             onClick={() => handleViewMarks(student.id)}
                             className="text-green-600 hover:text-green-900"
                           >
-                            View Marks
+                            View Subject Marks
                           </button>
                           <button
                             onClick={() => handleDelete(student.id, student.name)}
@@ -429,7 +463,7 @@ const StudentList = () => {
                     </tr>
                     {expandedStudent === student.id && (
                       <tr>
-                        <td colSpan="4" className="px-6 py-4 bg-gray-50">
+                        <td colSpan="5" className="px-6 py-4 bg-gray-50"> {/* Changed from colSpan="4" to "5" */}
                           <div className="ml-8">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                               <div>
@@ -457,21 +491,22 @@ const StudentList = () => {
                                 <p className="text-sm">{student.phone}</p>
                               </div>
                               <div>
-                                <span className="text-sm font-medium text-gray-500">Created At:</span>
-                                <p className="text-sm">
-                                  {new Date(student.createdAt).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })}
+                                <span className="text-sm font-medium text-gray-500">Result Mark:</span>
+                                <p className={`text-sm font-medium ${
+                                  student.resultMark >= 80 ? 'text-green-600' :
+                                  student.resultMark >= 60 ? 'text-yellow-600' :
+                                  student.resultMark >= 40 ? 'text-orange-600' :
+                                  'text-red-600'
+                                }`}>
+                                  {typeof student.resultMark === 'number' ? 
+                                    student.resultMark.toFixed(2) : 
+                                    parseFloat(student.resultMark || 0).toFixed(2)} / 100
                                 </p>
                               </div>
                               <div>
-                                <span className="text-sm font-medium text-gray-500">Updated At:</span>
+                                <span className="text-sm font-medium text-gray-500">Created At:</span>
                                 <p className="text-sm">
-                                  {student.updatedAt && new Date(student.updatedAt).toLocaleDateString('en-US', {
+                                  {new Date(student.createdAt).toLocaleDateString('en-US', {
                                     year: 'numeric',
                                     month: 'long',
                                     day: 'numeric',
