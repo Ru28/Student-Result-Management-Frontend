@@ -9,6 +9,7 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
     email: '',
     phone: '',
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (student) {
@@ -34,6 +35,36 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
     }
   }, [formData.standard, formData.rollNumber]);
 
+  const validate = () => {
+    let newErrors = {};
+
+    // Name max 256 chars
+    if (!formData.name || formData.name.length > 256) {
+      newErrors.name = "Name must be less than 256 characters.";
+    }
+
+    // Email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Invalid email address.";
+    }
+
+    // Phone validation (10 digit, starts with 6–9)
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = "Phone must be a valid 10-digit number starting with 6–9.";
+    }
+
+    // Standard limit 1–26
+    const standardNumber = Number(formData.standard);
+    if (!standardNumber || standardNumber < 1 || standardNumber > 26) {
+      newErrors.standard = "Standard must be between 1 and 26.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -44,6 +75,7 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validate()) return; 
     onSubmit(formData);
   };
 
@@ -76,8 +108,10 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
                 value={formData.name}
                 onChange={handleChange}
                 required
+                maxLength={256}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
 
             <div>
@@ -104,8 +138,11 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
                 value={formData.standard}
                 onChange={handleChange}
                 required
+                min={1}
+                max={26}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {errors.standard && <p className="text-red-500 text-xs mt-1">{errors.standard}</p>}
             </div>
 
             <div>
@@ -133,6 +170,7 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
 
             <div>
@@ -143,10 +181,14 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
                 type="tel"
                 name="phone"
                 value={formData.phone}
-                onChange={handleChange}
+                onChange={(e) => {
+                  // Allow only digits & max 10 characters
+                  if (/^\d{0,10}$/.test(e.target.value)) handleChange(e);
+                }}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
             </div>
           </div>
 
