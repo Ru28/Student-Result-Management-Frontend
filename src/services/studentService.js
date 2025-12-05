@@ -2,9 +2,18 @@ import axios from 'axios';
 import { API_BASE_URL } from '../../baseurl';
 
 
-export const getAllStudents = async () => {
+export const getAllStudents = async (params = {}) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/student/getStudents`);
+    const response = await axios.get(`${API_BASE_URL}/student/getStudents`, {
+      params: {
+        page: params.page || 1,
+        limit: params.limit || 10,
+        search: params.search || '',
+        standard: params.standard || '',
+        sortBy: params.sortBy || 'createdAt',
+        sortOrder: params.sortOrder || 'DESC'
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
