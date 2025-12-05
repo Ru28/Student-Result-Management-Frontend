@@ -31,7 +31,7 @@ export const setStudentInfo = async (studentData) => {
 
 export const updateStudentInfo = async (studentData) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/student/updateStudentInfo`, studentData);
+    const response = await axios.put(`${API_BASE_URL}/student/updateStudentInfo?id=${studentData.id}`, studentData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

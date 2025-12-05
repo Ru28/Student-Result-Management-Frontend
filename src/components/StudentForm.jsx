@@ -23,6 +23,17 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
     }
   }, [student]);
 
+  useEffect(() => {
+    if (formData.standard && formData.rollNumber) {
+      const letter = String.fromCharCode(64 + Number(formData.standard)); 
+      const generatedId = `${letter}${formData.rollNumber}`;
+      setFormData(prev => ({
+        ...prev,
+        studentCardId: generatedId,
+      }));
+    }
+  }, [formData.standard, formData.rollNumber]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -37,8 +48,8 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+    <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="relative p-5 w-full max-w-2xl rounded-md bg-white shadow-2xl shadow-gray-800/40">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">
             {student ? 'Edit Student' : 'Add New Student'}
@@ -85,20 +96,6 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Student Card ID *
-              </label>
-              <input
-                type="text"
-                name="studentCardId"
-                value={formData.studentCardId}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Standard/Class *
               </label>
               <input
@@ -108,6 +105,19 @@ const StudentForm = ({ student, onSubmit, onCancel }) => {
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Student Card ID *
+              </label>
+              <input
+                type="text"
+                name="studentCardId"
+                value={formData.studentCardId}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
               />
             </div>
 
